@@ -1,0 +1,7 @@
+error: input must be a tuple struct with unnamed fields
+ --> tests/ui/unit_struct.rs:3:10
+  |
+3 | #[derive(StrongHandle)]
+  |          ^^^^^^^^^^^^
+  |
+  = note: this error originates in the derive macro `StrongHandle` (in Nightly builds, run with -Z macro-backtrace for more info)

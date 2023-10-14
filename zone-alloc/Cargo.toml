@@ -1,0 +1,19 @@
+[package]
+name = "zone-alloc"
+version = "0.1.2"
+edition = "2021"
+description = "Containers for zone-based data allocation."
+authors = ["Jackson Nestelroad <jackson@nestelroad.com>"]
+categories = ["memory-management", "no-std"]
+keywords = ["allocation", "memory", "arena"]
+license = "MIT"
+documentation = "https://docs.rs/zone_alloc"
+readme = "README.md"
+
+[features]
+default = ["std"]
+
+# Depend on the entire Rust standard library.
+std = []
+
+[dependencies]

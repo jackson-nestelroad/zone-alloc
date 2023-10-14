@@ -1,0 +1,7 @@
+error: input must have exactly one unnamed field
+ --> tests/ui/too_many_fields.rs:4:10
+  |
+4 | #[derive(StrongHandle)]
+  |          ^^^^^^^^^^^^
+  |
+  = note: this error originates in the derive macro `StrongHandle` (in Nightly builds, run with -Z macro-backtrace for more info)
