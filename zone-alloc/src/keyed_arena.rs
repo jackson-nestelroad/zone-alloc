@@ -163,6 +163,15 @@ where
             .cloned()
             .map(|r| unsafe { &*r })
     }
+
+    /// Checks if the arena contains a value for the given `key`.
+    pub fn contains_key<R>(&self, key: &R) -> bool
+    where
+        K: Borrow<R>,
+        R: Key + ?Sized,
+    {
+        self.entries.borrow().contains_key(key)
+    }
 }
 
 #[cfg(test)]
@@ -243,6 +252,12 @@ mod keyed_arena_test {
             );
             assert!(node.is_some());
             assert_eq!(arena.len(), 4);
+            let node = arena.insert(
+                "node1".to_owned(),
+                Node::new(None, 5, DropCounter(&drop_counter)),
+            );
+            assert!(node.is_none());
+            assert_eq!(arena.len(), 4);
 
             let mut node = arena.get("node4").unwrap();
             assert_eq!(node.value, 4);
@@ -253,10 +268,12 @@ mod keyed_arena_test {
             node = arena.get(node.parent.as_ref().unwrap()).unwrap();
             assert_eq!(node.value, 1);
             assert_eq!(node.parent, None);
-            assert_eq!(drop_counter.get(), 0);
+
+            // We dropped a value from the failed insertion above.
+            assert_eq!(drop_counter.get(), 1);
         }
-        // All values deallocated at the same time.
-        assert_eq!(drop_counter.get(), 4);
+        // All inserted values deallocated at the same time.
+        assert_eq!(drop_counter.get(), 5);
     }
 
     #[test]
@@ -290,5 +307,19 @@ mod keyed_arena_test {
                 .collect::<BTreeSet<_>>(),
             (1..11).collect::<BTreeSet<_>>()
         );
+    }
+
+    #[test]
+    fn contains_key_checks_values() {
+        let arena = KeyedArena::new();
+        for i in 0..10 {
+            arena.insert(i, i);
+        }
+        for i in 0..10 {
+            assert!(arena.contains_key(&i));
+        }
+        assert!(!arena.contains_key(&11));
+        assert!(!arena.contains_key(&20));
+        assert!(!arena.contains_key(&-1));
     }
 }
