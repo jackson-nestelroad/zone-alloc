@@ -174,6 +174,20 @@ where
     }
 }
 
+impl<K, V> FromIterator<(K, V)> for KeyedArena<K, V>
+where
+    K: Key,
+{
+    fn from_iter<T: IntoIterator<Item = (K, V)>>(iter: T) -> Self {
+        let iter = iter.into_iter();
+        let arena = Self::new();
+        for (key, value) in iter {
+            arena.insert(key, value);
+        }
+        arena
+    }
+}
+
 #[cfg(test)]
 mod keyed_arena_test {
     #[cfg(not(feature = "std"))]
@@ -321,5 +335,11 @@ mod keyed_arena_test {
         assert!(!arena.contains_key(&11));
         assert!(!arena.contains_key(&20));
         assert!(!arena.contains_key(&-1));
+    }
+
+    #[test]
+    fn constructible_from_iterator() {
+        let arena: KeyedArena<i32, i32> = (0..100).zip(0..100).collect();
+        assert_eq!(arena.len(), 100);
     }
 }

@@ -302,6 +302,15 @@ impl Arena<u8> {
     }
 }
 
+impl<A> FromIterator<A> for Arena<A> {
+    fn from_iter<T: IntoIterator<Item = A>>(iter: T) -> Self {
+        let iter = iter.into_iter();
+        let arena = Self::with_capacity(iter.size_hint().0);
+        arena.alloc_extend(iter);
+        arena
+    }
+}
+
 #[cfg(test)]
 mod arena_test {
     #[cfg(not(feature = "std"))]
@@ -635,5 +644,11 @@ mod arena_test {
                 assert!(max >= remaining)
             }
         }
+    }
+
+    #[test]
+    fn constructible_from_iterator() {
+        let arena: Arena<i32> = (0..100).collect();
+        assert_eq!(arena.len(), 100);
     }
 }
