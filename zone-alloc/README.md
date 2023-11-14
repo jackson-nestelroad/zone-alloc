@@ -19,6 +19,7 @@ This crate defines three containers:
 - `Arena<T>` - A container that can be used for arena allocation of values of a given type.
 - `Registry<T>` - An extension of `Arena<T>` that provides integer handles for allocated data.
 - `StrongRegistry<H, T>` - An extension of `Registry<T>` that provides strongly-typed handles for allocated data.
+- `KeyedArena<K, T>` - An extension of `Arena<T>` that maintains a mapping of keys to values.
 
 ## Additional Crates
 
@@ -28,8 +29,9 @@ This crate defines three containers:
 
 While the crate is by default built with the Rust standard library, this feature can be removed for no-std environments.
 
-- `default` - `std`
+- `default` - `std`, `ahash`
 - `std` - Depend on the Rust standard library.
+- `ahash` - Use the ahash library for hash maps.
 
 ## Examples
 

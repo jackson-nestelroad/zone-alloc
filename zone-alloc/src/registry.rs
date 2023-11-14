@@ -6,8 +6,6 @@ extern crate core;
 
 #[cfg(not(feature = "std"))]
 use alloc::vec::Vec;
-
-use crate::Arena;
 use core::{
     cell::{
         RefCell,
@@ -16,6 +14,8 @@ use core::{
     mem,
     slice,
 };
+
+use crate::Arena;
 
 /// A handle to data registered in a specific [`Registry`].
 ///
@@ -172,12 +172,12 @@ mod registry_test {
 
     #[cfg(not(feature = "std"))]
     use alloc::vec;
+    use core::cell::Cell;
 
     use crate::{
         Handle,
         Registry,
     };
-    use core::cell::Cell;
 
     // A shared counter for how many times a value is deallocated.
     struct DropCounter<'c>(&'c Cell<u32>);
@@ -301,7 +301,7 @@ mod registry_test {
             registry.register(i);
         }
         for i in registry.iter_mut() {
-            *i += 1
+            *i += 1;
         }
         assert!(registry.iter_mut().zip(1..11).all(|(a, b)| a == &b));
     }

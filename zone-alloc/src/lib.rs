@@ -68,12 +68,20 @@
 //! }
 //! ```
 #![cfg_attr(not(feature = "std"), no_std)]
+#![feature(trait_alias)]
 
 pub mod arena;
+mod keyed_arena;
 pub mod registry;
 mod strong_registry;
 
 pub use arena::Arena;
+pub use keyed_arena::{
+    Key,
+    KeyMap,
+    KeyMapIter,
+    KeyedArena,
+};
 pub use registry::{
     Handle,
     Registry,
