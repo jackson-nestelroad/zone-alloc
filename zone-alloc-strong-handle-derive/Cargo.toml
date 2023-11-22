@@ -1,6 +1,6 @@
 [package]
 name = "zone-alloc-strong-handle-derive"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 description = "Procedural macro for zone-alloc StrongHandle types."
 authors = ["Jackson Nestelroad <jackson@nestelroad.com>"]

@@ -11,7 +11,7 @@ This crate also provides "registries," which are container types that procide ar
 
 ```toml
 [dependencies]
-zone-alloc = "0.1"
+zone-alloc = "0.3"
 ```
 
 ## Usage

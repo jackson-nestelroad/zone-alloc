@@ -9,7 +9,7 @@ This crate provides a procedural macro for deriving the `StrongHandle` interface
 
 ```toml
 [dependencies]
-zone-alloc = "0.1"
+zone-alloc = "0.3"
 zone-alloc-strong-handle-derive = "0.1"
 ```
 
