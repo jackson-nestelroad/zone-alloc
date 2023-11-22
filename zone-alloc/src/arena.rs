@@ -160,6 +160,11 @@ impl<T> Arena<T> {
         }
     }
 
+    /// Checks if the arena is empty.
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
+
     /// Returns the number of elements allocated in the arena.
     pub fn len(&self) -> usize {
         let blocks = self.blocks.borrow();
@@ -368,11 +373,13 @@ mod arena_test {
         let drop_counter = Cell::new(0);
         {
             let arena = Arena::with_capacity(2);
+            assert!(arena.is_empty());
 
             // Allocate a chain of nodes that refer to each other.
             let mut node: &Node<u32> = arena.alloc(Node::new(None, 1, DropCounter(&drop_counter)));
             assert_eq!(commited_blocks(&arena), 0);
             assert_eq!(arena.len(), 1);
+            assert!(!arena.is_empty());
             node = arena.alloc(Node::new(Some(node), 2, DropCounter(&drop_counter)));
             assert_eq!(commited_blocks(&arena), 0);
             assert_eq!(arena.len(), 2);

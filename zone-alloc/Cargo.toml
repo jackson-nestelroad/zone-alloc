@@ -1,6 +1,6 @@
 [package]
 name = "zone-alloc"
-version = "0.2.2"
+version = "0.3.0"
 edition = "2021"
 description = "Containers for zone-based data allocation."
 authors = ["Jackson Nestelroad <jackson@nestelroad.com>"]
@@ -11,13 +11,10 @@ documentation = "https://docs.rs/zone_alloc"
 readme = "README.md"
 
 [features]
-default = ["std", "ahash"]
+default = ["std"]
 
 # Depend on the entire Rust standard library.
 std = []
 
-# Use the ahash library for hash maps.
-ahash = ["dep:ahash", "std"]
-
 [dependencies]
-ahash = { version = "0.8.6", optional = true }
+hashbrown = "0.14"

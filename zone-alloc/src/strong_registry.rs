@@ -6,13 +6,15 @@ extern crate core;
 
 #[cfg(not(feature = "std"))]
 use alloc::vec::Vec;
+use core::marker::PhantomData;
 
 use crate::{
-    registry,
+    BorrowError,
+    ElementRef,
+    ElementRefMut,
     Handle,
     Registry,
 };
-use core::marker::PhantomData;
 
 /// A strong handle to data registered in a specific [`StrongRegistry`].
 ///
@@ -53,6 +55,11 @@ where
         }
     }
 
+    /// Checks if the registry is empty.
+    pub fn is_empty(&self) -> bool {
+        self.registry.is_empty()
+    }
+
     /// Returns the number of elements owned by the strong registry.
     pub fn len(&self) -> usize {
         self.registry.len()
@@ -87,35 +94,52 @@ where
         self.registry.into_vec()
     }
 
+    /// Returns an iterator that provides immutable access to all elements in the registry, in order
+    /// of registration.
+    pub fn iter(&self) -> impl Iterator<Item = Result<ElementRef<T>, BorrowError>> {
+        self.registry.iter()
+    }
+
     /// Returns an iterator that provides mutable access to all elements in the registry, in order
     /// of registration.
-    ///
-    /// Registries only allow mutable iteration because the entire registry must be borrowed for the
-    /// duration of the iteration. The mutable borrow to call this method allows Rust's borrow
-    /// checker to enforce this rule.
-    pub fn iter_mut(&mut self) -> registry::IterMut<T> {
+    pub fn iter_mut(&mut self) -> impl Iterator<Item = Result<ElementRefMut<T>, BorrowError>> {
         self.registry.iter_mut()
     }
 
-    /// Returns a mutable reference to a value previously registered in the strong registry.
-    pub fn get_mut(&self, handle: H) -> Option<&mut T> {
-        self.registry.get_mut(handle.handle())
+    /// Returns a reference to a value previously registered in the registry.
+    ///
+    /// Panics if there is a borrow error.
+    pub fn get_unchecked(&self, handle: H) -> ElementRef<T> {
+        self.registry.get_unchecked(handle.handle())
     }
 
-    /// Returns a reference to a value previously registered in the strong registry.
-    pub fn get(&self, handle: H) -> Option<&T> {
+    /// Tries to get a reference to a value previously registered in the registry.
+    pub fn get(&self, handle: H) -> Result<ElementRef<T>, BorrowError> {
         self.registry.get(handle.handle())
+    }
+
+    /// Returns a mutable reference to a value previously registered in the registry.
+    ///
+    /// Panics if there is a borrow error.
+    pub fn get_mut_unchecked(&self, handle: H) -> ElementRefMut<T> {
+        self.registry.get_mut_unchecked(handle.handle())
+    }
+
+    /// Tries to get a mutable reference to a value previously registered in the registry.
+    pub fn get_mut(&self, handle: H) -> Result<ElementRefMut<T>, BorrowError> {
+        self.registry.get_mut(handle.handle())
     }
 }
 
 #[cfg(test)]
 mod strong_registry_test {
+    use core::cell::Cell;
+
     use crate::{
         Handle,
         StrongHandle,
         StrongRegistry,
     };
-    use core::cell::Cell;
 
     // A shared counter for how many times a value is deallocated.
     struct DropCounter<'c>(&'c Cell<u32>);
@@ -166,10 +190,12 @@ mod strong_registry_test {
         let drop_counter = Cell::new(0);
         {
             let registry = StrongRegistry::with_capacity(2);
+            assert!(registry.is_empty());
 
             // Allocate a chain of nodes that refer to each other.
             let mut handle = registry.register(Node::new(None, 1, DropCounter(&drop_counter)));
             assert_eq!(registry.len(), 1);
+            assert!(!registry.is_empty());
             handle = registry.register(Node::new(Some(handle), 2, DropCounter(&drop_counter)));
             assert_eq!(registry.len(), 2);
             handle = registry.register(Node::new(Some(handle), 3, DropCounter(&drop_counter)));
