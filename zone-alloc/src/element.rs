@@ -164,17 +164,17 @@ where
     }
 }
 
-impl<T> Deref for ElementRefMut<'_, T> {
+impl<'borrow, T> Deref for ElementRefMut<'borrow, T> {
     type Target = T;
     #[inline]
-    fn deref(&self) -> &Self::Target {
+    fn deref(&self) -> &'borrow Self::Target {
         unsafe { self.value.as_ref() }
     }
 }
 
-impl<T> DerefMut for ElementRefMut<'_, T> {
+impl<'borrow, T> DerefMut for ElementRefMut<'borrow, T> {
     #[inline]
-    fn deref_mut(&mut self) -> &mut Self::Target {
+    fn deref_mut(&mut self) -> &'borrow mut Self::Target {
         unsafe { self.value.as_mut() }
     }
 }
