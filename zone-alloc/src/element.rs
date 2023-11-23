@@ -179,6 +179,27 @@ impl<'borrow, T> DerefMut for ElementRefMut<'borrow, T> {
     }
 }
 
+impl<'borrow, T> AsRef<T> for ElementRef<'borrow, T> {
+    #[inline]
+    fn as_ref(&self) -> &T {
+        self.deref()
+    }
+}
+
+impl<'borrow, T> AsRef<T> for ElementRefMut<'borrow, T> {
+    #[inline]
+    fn as_ref(&self) -> &T {
+        self.deref()
+    }
+}
+
+impl<'borrow, T> AsMut<T> for ElementRefMut<'borrow, T> {
+    #[inline]
+    fn as_mut(&mut self) -> &mut T {
+        self.deref_mut()
+    }
+}
+
 impl<T> Debug for ElementRefMut<'_, T>
 where
     T: Debug,
