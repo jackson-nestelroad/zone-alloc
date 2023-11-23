@@ -188,6 +188,15 @@ where
     {
         KeyedBaseRegistry::try_borrow_mut(&self.base, key)
     }
+
+    /// Checks if the registry contains an item associated with the given key.
+    pub fn contains_key<R>(&self, key: &R) -> bool
+    where
+        K: Borrow<R>,
+        R: Key + ?Sized,
+    {
+        self.base.entries().contains_key(key)
+    }
 }
 
 #[cfg(test)]
@@ -603,5 +612,21 @@ mod registry_test {
             vec![None, None, Some(BorrowError::AlreadyBorrowed), None]
         );
         drop(borrow);
+    }
+
+    #[test]
+    fn contains_key_works() {
+        let registry = KeyedRegistry::new();
+        assert!(!registry.contains_key("foo"));
+        assert!(!registry.contains_key("bar"));
+        assert!(!registry.contains_key("baz"));
+        registry.register("foo".to_owned(), "bar".to_owned());
+        assert!(registry.contains_key("foo"));
+        assert!(!registry.contains_key("bar"));
+        assert!(!registry.contains_key("baz"));
+        registry.register("bar".to_owned(), "baz".to_owned());
+        assert!(registry.contains_key("foo"));
+        assert!(registry.contains_key("bar"));
+        assert!(!registry.contains_key("baz"));
     }
 }
