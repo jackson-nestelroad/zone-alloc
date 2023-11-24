@@ -82,7 +82,17 @@ impl Clone for BorrowRef<'_> {
     }
 }
 
+#[cfg(feature = "may-dangle")]
+unsafe impl<#[may_dangle] 'borrow> Drop for BorrowRef<'borrow> {
+    #[inline]
+    fn drop(&mut self) {
+        self.state.set(self.state.get().drop_reader());
+    }
+}
+
+#[cfg(not(feature = "may-dangle"))]
 impl Drop for BorrowRef<'_> {
+    #[inline]
     fn drop(&mut self) {
         self.state.set(self.state.get().drop_reader());
     }
@@ -101,7 +111,17 @@ impl<'borrow> BorrowRefMut<'borrow> {
     }
 }
 
+#[cfg(feature = "may-dangle")]
+unsafe impl<#[may_dangle] 'borrow> Drop for BorrowRefMut<'borrow> {
+    #[inline]
+    fn drop(&mut self) {
+        self.state.set(BorrowState::NotBorrowed);
+    }
+}
+
+#[cfg(not(feature = "may-dangle"))]
 impl Drop for BorrowRefMut<'_> {
+    #[inline]
     fn drop(&mut self) {
         self.state.set(BorrowState::NotBorrowed);
     }
@@ -130,6 +150,13 @@ impl<T> Deref for ElementRef<'_, T> {
     #[inline]
     fn deref(&self) -> &Self::Target {
         unsafe { self.value.as_ref() }
+    }
+}
+
+impl<'borrow, T> AsRef<T> for ElementRef<'borrow, T> {
+    #[inline]
+    fn as_ref(&self) -> &T {
+        self.deref()
     }
 }
 
@@ -176,13 +203,6 @@ impl<'borrow, T> DerefMut for ElementRefMut<'borrow, T> {
     #[inline]
     fn deref_mut(&mut self) -> &'borrow mut Self::Target {
         unsafe { self.value.as_mut() }
-    }
-}
-
-impl<'borrow, T> AsRef<T> for ElementRef<'borrow, T> {
-    #[inline]
-    fn as_ref(&self) -> &T {
-        self.deref()
     }
 }
 

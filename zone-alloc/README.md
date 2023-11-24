@@ -33,6 +33,7 @@ While the crate is by default built with the Rust standard library, this feature
 
 - `default` - `std`
 - `std` - Depend on the Rust standard library.
+- `may-dangle` - Use the `#[may_dangle]` attribute on the `Drop` implementation of `ElementRef` and `ElementRefMut`.
 
 ## Examples
 
