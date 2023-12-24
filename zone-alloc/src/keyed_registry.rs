@@ -197,6 +197,13 @@ where
     {
         self.base.entries().contains_key(key)
     }
+
+    /// Checks if the registry is safe to drop.
+    ///
+    /// A registry is safe to drop if all elements are not borrowed. This check is not thread safe.
+    pub fn safe_to_drop(&mut self) -> bool {
+        self.base.safe_to_drop()
+    }
 }
 
 #[cfg(test)]
@@ -212,10 +219,15 @@ mod registry_test {
         vec,
         vec::Vec,
     };
-    use core::cell::Cell;
+    use core::{
+        cell::Cell,
+        mem,
+    };
 
     use crate::{
         BorrowError,
+        ElementRef,
+        ElementRefMut,
         KeyedRegistry,
     };
 
@@ -628,5 +640,28 @@ mod registry_test {
         assert!(registry.contains_key("foo"));
         assert!(registry.contains_key("bar"));
         assert!(!registry.contains_key("baz"));
+    }
+
+    #[test]
+    fn safe_to_drop_tracks_borrows() {
+        let mut registry = KeyedRegistry::new();
+        registry.register_extend((1..5).map(|i| (i, i)));
+        assert!(registry.safe_to_drop());
+
+        let borrow_1: ElementRef<'_, i32> = unsafe { mem::transmute(registry.get(&1)) };
+        let borrow_2: ElementRef<'_, i32> = unsafe { mem::transmute(registry.get(&1)) };
+        let borrow_3: ElementRefMut<'_, i32> = unsafe { mem::transmute(registry.get_mut(&2)) };
+        assert!(!registry.safe_to_drop());
+
+        assert!(borrow_1.eq(&1));
+        assert!(borrow_2.eq(&1));
+        assert!(borrow_3.eq(&2));
+
+        drop(borrow_1);
+        assert!(!registry.safe_to_drop());
+        drop(borrow_2);
+        assert!(!registry.safe_to_drop());
+        drop(borrow_3);
+        assert!(registry.safe_to_drop());
     }
 }

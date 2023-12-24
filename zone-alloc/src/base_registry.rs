@@ -222,6 +222,15 @@ where
             .ok_or(BorrowError::OutOfBounds)
             .and_then(|entry| entry.borrow_mut())
     }
+
+    /// Checks if the registry is safe to drop.
+    ///
+    /// A registry is safe to drop if all elements are not borrowed. This check is not thread safe.
+    pub fn safe_to_drop(&mut self) -> bool {
+        self.borrow_states
+            .iter_mut()
+            .all(|borrow_state| borrow_state.get() == BorrowState::NotBorrowed)
+    }
 }
 
 /// Trait for borrowing by key in a [`BaseRegistry`].
@@ -308,6 +317,7 @@ mod base_registry_test {
         vec,
         vec::Vec,
     };
+    use core::mem;
 
     use crate::{
         base_registry::{
@@ -315,6 +325,8 @@ mod base_registry_test {
             BaseRegistryEntry,
         },
         BorrowError,
+        ElementRef,
+        ElementRefMut,
     };
 
     type VecBasedRegistry<T> = BaseRegistry<usize, T, Vec<BaseRegistryEntry<T>>>;
@@ -453,5 +465,29 @@ mod base_registry_test {
         assert!(borrow_2.eq(&2));
         assert!(borrow_3.eq(&5));
         assert!(borrow_4.eq(&98));
+    }
+
+    #[test]
+    fn safe_to_drop_tracks_borrows() {
+        let mut registry = VecBasedRegistry::new();
+        assert!(registry.safe_to_drop());
+        insert_many_into_registry(&registry, [1, 2, 3, 4]);
+        assert!(registry.safe_to_drop());
+
+        let borrow_1: ElementRef<'_, i32> = unsafe { mem::transmute(registry.borrow(&0)) };
+        let borrow_2: ElementRef<'_, i32> = unsafe { mem::transmute(registry.borrow(&0)) };
+        let borrow_3: ElementRefMut<'_, i32> = unsafe { mem::transmute(registry.borrow_mut(&1)) };
+        assert!(!registry.safe_to_drop());
+
+        assert!(borrow_1.eq(&1));
+        assert!(borrow_2.eq(&1));
+        assert!(borrow_3.eq(&2));
+
+        drop(borrow_1);
+        assert!(!registry.safe_to_drop());
+        drop(borrow_2);
+        assert!(!registry.safe_to_drop());
+        drop(borrow_3);
+        assert!(registry.safe_to_drop());
     }
 }

@@ -129,6 +129,13 @@ where
     pub fn get_mut(&self, handle: H) -> Result<ElementRefMut<T>, BorrowError> {
         self.registry.get_mut(handle.handle())
     }
+
+    /// Checks if the registry is safe to drop.
+    ///
+    /// A registry is safe to drop if all elements are not borrowed. This check is not thread safe.
+    pub fn safe_to_drop(&mut self) -> bool {
+        self.registry.safe_to_drop()
+    }
 }
 
 #[cfg(test)]
