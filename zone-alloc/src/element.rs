@@ -63,6 +63,8 @@ impl BorrowState {
 }
 
 /// A borrow reference, which is a shared reference to an element's borrow state.
+///
+/// This object is guaranteed to not own any state (all state is borrowed).
 #[derive(Debug)]
 pub(crate) struct BorrowRef<'borrow> {
     state: &'borrow Cell<BorrowState>,
@@ -99,6 +101,8 @@ impl Drop for BorrowRef<'_> {
 }
 
 /// A mutable borrow reference, which is a reference to an element's borrow state.
+///
+/// This object is guaranteed to not own any state (all state is borrowed).
 #[derive(Debug)]
 pub(crate) struct BorrowRefMut<'borrow> {
     state: &'borrow Cell<BorrowState>,
@@ -128,6 +132,8 @@ impl Drop for BorrowRefMut<'_> {
 }
 
 /// An immutably borrowed element.
+///
+/// This object is guaranteed to not own any state (all state is borrowed).
 #[derive(Clone)]
 pub struct ElementRef<'borrow, T> {
     value: NonNull<T>,
@@ -170,6 +176,8 @@ where
 }
 
 /// A mutably borrowed element.
+///
+/// This object is guaranteed to not own any state (all state is borrowed).
 pub struct ElementRefMut<'borrow, T> {
     value: NonNull<T>,
     #[allow(unused)]
