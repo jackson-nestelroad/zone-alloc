@@ -11,5 +11,9 @@
     "rust-analyzer.linkedProjects": [
         "./Cargo.toml"
     ],
+    "rust-analyzer.cargo.features": [
+        "std",
+        "may-dangle"
+    ],
     "rust-analyzer.showUnlinkedFileNotification": false,
 }

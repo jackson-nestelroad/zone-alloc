@@ -1,4 +1,7 @@
-use core::fmt::Display;
+use core::{
+    error::Error,
+    fmt::Display,
+};
 
 /// A borrow error.
 #[derive(Debug, PartialEq, Eq)]
@@ -20,3 +23,5 @@ impl Display for BorrowError {
         }
     }
 }
+
+impl Error for BorrowError {}

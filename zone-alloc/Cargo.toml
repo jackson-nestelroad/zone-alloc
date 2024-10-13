@@ -1,6 +1,6 @@
 [package]
 name = "zone-alloc"
-version = "0.4.0"
+version = "0.4.1"
 edition = "2021"
 description = "Containers for zone-based data allocation."
 authors = ["Jackson Nestelroad <jackson@nestelroad.com>"]
