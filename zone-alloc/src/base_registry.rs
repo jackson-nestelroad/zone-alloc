@@ -6,12 +6,13 @@ extern crate core;
 
 #[cfg(not(feature = "std"))]
 use alloc::vec::Vec;
+#[cfg(feature = "sync-unsafe-cell")]
+use core::cell::SyncUnsafeCell;
+#[cfg(not(feature = "sync-unsafe-cell"))]
+use core::cell::UnsafeCell;
 use core::{
     borrow::Borrow,
-    cell::{
-        Cell,
-        UnsafeCell,
-    },
+    cell::Cell,
     iter,
     marker::PhantomData,
     ptr::NonNull,
@@ -93,6 +94,9 @@ pub(crate) struct BaseRegistry<K, V, R> {
     // SAFETY: The elements of `entries` do not own any data. `entries` is safe to resize without
     // worrying about external references as long as no references to the elements themselves
     // exist.
+    #[cfg(feature = "sync-unsafe-cell")]
+    entries: SyncUnsafeCell<R>,
+    #[cfg(not(feature = "sync-unsafe-cell"))]
     entries: UnsafeCell<R>,
     phantom_key: PhantomData<K>,
 }

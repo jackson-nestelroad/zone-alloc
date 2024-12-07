@@ -1,6 +1,6 @@
 [package]
 name = "zone-alloc"
-version = "0.4.2"
+version = "0.4.3"
 edition = "2021"
 description = "Containers for zone-based data allocation."
 authors = ["Jackson Nestelroad <jackson@nestelroad.com>"]
@@ -18,6 +18,9 @@ std = []
 
 # Implement Drop for element reference with the "may_dangle" attribute. 
 may-dangle = []
+
+# Use SyncUnsafeCell instead of UnsafeCell for registry entries.
+sync-unsafe-cell = []
 
 [dependencies]
 hashbrown = "0.14"

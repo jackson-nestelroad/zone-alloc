@@ -165,6 +165,7 @@
 //! ```
 #![cfg_attr(not(feature = "std"), no_std)]
 #![feature(dropck_eyepatch)]
+#![feature(sync_unsafe_cell)]
 #![feature(trait_alias)]
 
 pub mod arena;
