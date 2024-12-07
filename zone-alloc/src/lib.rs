@@ -165,7 +165,6 @@
 //! ```
 #![cfg_attr(not(feature = "std"), no_std)]
 #![feature(dropck_eyepatch)]
-#![feature(return_position_impl_trait_in_trait)]
 #![feature(trait_alias)]
 
 pub mod arena;

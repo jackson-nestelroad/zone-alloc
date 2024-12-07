@@ -31,6 +31,7 @@ pub(crate) trait RegistryContainer<K, V> {
     fn get<'a, 'b>(&'a self, key: &K) -> Option<&'b V>
     where
         'a: 'b;
+    #[allow(unused)]
     fn get_mut<'a, 'b>(&'a mut self, key: &K) -> Option<&'b mut V>
     where
         'a: 'b;
@@ -41,6 +42,7 @@ pub(crate) trait RegistryContainer<K, V> {
 pub(crate) trait KeyedRegistryContainer<K, V>:
     RegistryContainer<K, V, Item = (K, V)>
 {
+    #[allow(unused)]
     fn contains_key<R>(&self, key: &R) -> bool
     where
         K: Borrow<R>,
@@ -50,6 +52,7 @@ pub(crate) trait KeyedRegistryContainer<K, V>:
         'a: 'b,
         K: Borrow<R>,
         R: Key + ?Sized;
+    #[allow(unused)]
     fn get_mut<'a, 'b, R>(&'a mut self, key: &R) -> Option<&'b mut V>
     where
         'a: 'b,

@@ -30,6 +30,7 @@ pub trait StrongHandle: From<Handle> {
 /// shared across multiple registries.
 ///
 /// The handle type must implement the [`StrongHandle`] trait.
+#[derive(Default)]
 pub struct StrongRegistry<H, T> {
     registry: Registry<T>,
     phantom_handle: PhantomData<H>,

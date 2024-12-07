@@ -206,6 +206,15 @@ where
     }
 }
 
+impl<K, V> Default for KeyedRegistry<K, V>
+where
+    K: Key,
+{
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 #[cfg(test)]
 mod registry_test {
     #[cfg(not(feature = "std"))]

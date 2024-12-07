@@ -35,6 +35,7 @@ pub type Handle = usize;
 ///
 /// A single value can be moved into the registry using [`Registry::register`], and multiple values
 /// can be moved in using [`Registry::register_extend`].
+#[derive(Default)]
 pub struct Registry<T> {
     base: BaseRegistry<usize, T, Vec<BaseRegistryEntry<T>>>,
 }

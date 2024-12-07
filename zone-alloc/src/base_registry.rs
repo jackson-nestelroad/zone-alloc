@@ -233,6 +233,15 @@ where
     }
 }
 
+impl<K, V, R> Default for BaseRegistry<K, V, R>
+where
+    R: RegistryContainer<K, BaseRegistryEntry<V>>,
+{
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 /// Trait for borrowing by key in a [`BaseRegistry`].
 pub trait KeyedBaseRegistry<K, V> {
     /// Immutably borrows the element corresponding to `key`.
